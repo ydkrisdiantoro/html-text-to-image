@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Text To Image</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <style>
+        html{
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        body{
+            /* background: #f8fafc; */
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+        .outer-container {
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="outer-container">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col-12 col-sm-8 col-md-7 col-lg-6">
+                <div class="card border-0 my-auto mx-1 mx-lg-auto">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center">
+                            <h2 class="mb-0 fw-bold">HTML Text To Image</h2>
+                            <p class="text-muted mb-0">Convert your text into a beautiful image</p>
+                        </div>
+                        <form>
+                            <div class="mb-3">
+                                <label for="quote" class="form-label">Message</label>
+                                <div id="editor" style="height: 180px;">
+                                    <p><b>Lorem Ipsum</b> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                                </div>
+                                <input type="hidden" id="quote" name="quote" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tanggal" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="tanggal" name="tanggal" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="penulis" class="form-label">From</label>
+                                <input type="text" class="form-control" id="penulis" name="penulis" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Color</label>
+                                <div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="warna" id="warnaBlack" value="black" checked>
+                                        <label class="form-check-label" for="warnaBlack">Black</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="warna" id="warnaWhite" value="white">
+                                        <label class="form-check-label" for="warnaWhite">White</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Save</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+    </div>
+
+    <script>
+        // Set default date to today for the date input
+        document.addEventListener('DOMContentLoaded', function() {
+            const quoteInput = document.getElementById('quote');
+            const tanggalInput = document.getElementById('tanggal');
+            const penulisInput = document.getElementById('penulis');
+            if (tanggalInput) {
+                const today = new Date().toISOString().split('T')[0];
+                tanggalInput.value = today;
+            }
+            if (penulisInput) {
+                penulisInput.value = 'hanya_sekata_saja';
+            }
+            if (quoteInput) {
+                quoteInput.value = "<b>Lorem Ipsum</b> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.";
+            }
+        });
+    </script>
+
+    <script src="assets/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Modal for preview -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body d-flex justify-content-center">
+                    <div>
+                        <div id="previewArea" class="mb-0 border rounded p-2"></div>
+                    </div>
+                    <div class="d-flex">
+                        <div class="mt-auto ms-3">
+                            <button type="button" id="downloadBtn" class="btn btn-primary w-100 mt-1">Download</button>
+                            <button type="button" class="btn btn-secondary w-100 mt-1" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the Quill library -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        quill.on('text-change', function() {
+            document.getElementById('quote').value = quill.root.innerHTML;
+        });
+        document.getElementById('quote').value = quill.root.innerHTML;
+    </script>
+
+    <script>
+    document.querySelector('form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Get form values
+            const quote = document.getElementById('quote').value;
+            let tanggal = document.getElementById('tanggal').value;
+            // Format date to d-m-Y
+            if (tanggal) {
+                const [y, m, d] = tanggal.split('-');
+                tanggal = `${d}/${m}/${y}`;
+            }
+            const penulis = document.getElementById('penulis').value;
+            const warna = document.querySelector('input[name="warna"]:checked').value;
+
+            // Create a container for the image content
+            const imgContainer = document.createElement('div');
+            imgContainer.style.width = '1080px';
+            imgContainer.style.height = '1350px';
+            imgContainer.style.padding = '60px';
+            imgContainer.style.background = warna === 'black' ? '#111' : '#fff';
+            imgContainer.style.color = warna === 'black' ? '#fff' : '#111';
+            // imgContainer.style.borderRadius = '24px';
+            imgContainer.style.fontFamily = "'Segoe UI', 'Roboto', Arial, sans-serif";
+            imgContainer.style.boxShadow = '0 8px 32px 0 rgba(31,38,135,0.15)';
+            imgContainer.style.display = 'flex';
+            imgContainer.style.flexDirection = 'column';
+            imgContainer.style.alignItems = 'center';
+            imgContainer.style.justifyContent = 'center';
+            imgContainer.style.gap = '24px';
+            imgContainer.style.position = 'fixed';
+            imgContainer.style.left = '-9999px';
+
+            // Spacer for top
+            const topSpacer = document.createElement('div');
+            topSpacer.style.flex = '1';
+            imgContainer.appendChild(topSpacer);
+
+            // Add quote (center)
+            const quoteEl = document.createElement('div');
+            quoteEl.style.fontSize = '3.8rem';
+            quoteEl.style.fontWeight = '500';
+            quoteEl.style.textAlign = 'center';
+            quoteEl.style.whiteSpace = 'pre-line';
+            quoteEl.style.flex = '0 0 auto';
+            quoteEl.innerHTML = quote;
+            imgContainer.appendChild(quoteEl);
+
+            // Spacer for bottom
+            const bottomSpacer = document.createElement('div');
+            bottomSpacer.style.flex = '1';
+            imgContainer.appendChild(bottomSpacer);
+
+            // Add date and author (bottom)
+            const metaEl = document.createElement('div');
+            metaEl.style.fontSize = '2rem';
+            metaEl.style.opacity = '0.7';
+            metaEl.style.textAlign = 'center';
+            metaEl.style.alignSelf = 'center';
+            metaEl.style.marginBottom = '8px';
+
+            // SVG icon as string
+            const instagramSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" style="vertical-align:middle;margin-right:8px;" viewBox="0 0 16 16">
+  <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+</svg>`;
+
+            metaEl.innerHTML = `${tanggal} — ${instagramSVG}${penulis}`;
+            imgContainer.appendChild(metaEl);
+
+            // Add to DOM (hidden)
+            document.body.appendChild(imgContainer);
+
+            // Render to image
+            html2canvas(imgContainer, {backgroundColor: null}).then(canvas => {
+                    // Show preview in modal
+                    const previewArea = document.getElementById('previewArea');
+                    previewArea.innerHTML = '';
+                    canvas.style.maxWidth = '100%';
+                    canvas.style.height = 'auto';
+                    previewArea.appendChild(canvas);
+
+                    // Store canvas for download
+                    window._previewCanvas = canvas;
+
+                    // Show modal
+                    const myModalEl = document.getElementById('previewModal');
+                    const modal = new bootstrap.Modal(myModalEl);
+                    modal.show();
+
+                    // Clean up hidden container
+                    document.body.removeChild(imgContainer);
+            });
+    });
+
+    // Download button handler
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+            if (window._previewCanvas) {
+                    const link = document.createElement('a');
+                    link.download = 'text-image.png';
+                    link.href = window._previewCanvas.toDataURL('image/png');
+                    link.click();
+            }
+    });
+    </script>
+</body>
+</html>
