@@ -200,8 +200,8 @@
             imgContainer.style.boxShadow = '0 8px 32px 0 rgba(31,38,135,0.15)';
             imgContainer.style.display = 'flex';
             imgContainer.style.flexDirection = 'column';
-            imgContainer.style.alignItems = 'center';
-            imgContainer.style.justifyContent = 'center';
+            imgContainer.style.alignItems = align;
+            imgContainer.style.justifyContent = align;
             // imgContainer.style.gap = '24px';
             imgContainer.style.position = 'fixed';
             imgContainer.style.left = '-9999px';
@@ -236,7 +236,7 @@
             // Add quote (center)
             const quoteEl = document.createElement('div');
             quoteEl.style.fontSize = '3rem';
-            quoteEl.style.fontWeight = '500';
+            quoteEl.style.fontWeight = '400';
             quoteEl.style.textAlign = align;
             quoteEl.style.whiteSpace = 'pre-line';
             quoteEl.style.flex = '0 0 auto';
